@@ -2,10 +2,12 @@
 Constants used throughout the application.
 """
 # Order states
-DRAFT = "DRAFT"
-PLACED = "PLACED"
-FULFILLED = "FULFILLED"
-CANCELLED = "CANCELLED"
+ORDER_STATES = {
+    "DRAFT": "Draft",
+    "PLACED": "Placed",
+    "FULFILLED": "Fulfilled",
+    "CANCELLED": "Cancelled",
+}
 
 # Transaction actions
 TRANSACTION_ACTIONS = {
