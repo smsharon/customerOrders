@@ -2,14 +2,15 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.conf import settings
 from .models import Order, OrderItem, Transaction, Inventory
-import africastalking
 
-# --- Configure Africa's Talking ---
-africastalking.initialize(
-    username=getattr(settings, "AFRICASTALKING_USERNAME", "sandbox"),
-    api_key=getattr(settings, "AFRICASTALKING_API_KEY", "")
-)
-sms = africastalking.SMS
+# --- Configure Africa's Talking (SMS only) ---
+from africastalking.SMS import SMSService
+
+AT_USERNAME = getattr(settings, "AFRICASTALKING_USERNAME", "sandbox")
+AT_API_KEY = getattr(settings, "AFRICASTALKING_API_KEY", "")
+
+sms = SMSService(AT_USERNAME, AT_API_KEY)
+
 
 def send_sms(phone_number, message):
     """Send SMS via Africa's Talking, wrapped in try/except."""
@@ -44,7 +45,7 @@ def create_order_transactions(sender, instance, created, **kwargs):
             description="Order created"
         )
         # Send SMS on order placed
-        send_sms(instance.customer.phone, f"Your order {instance.id} has been placed.")
+        send_sms(instance.customer.phone_number, f"Your order {instance.id} has been placed.")
     else:
         # Order updated → log UPDATE_ORDER
         Transaction.objects.create(
@@ -67,15 +68,12 @@ def create_order_transactions(sender, instance, created, **kwargs):
             if instance.state == "FULFILLED":
                 # Deduct stock
                 for item in OrderItem.objects.filter(order=instance):
-                    try:
-                        inv = Inventory.objects.get(product=item.product)
-                        inv.quantity -= item.quantity
-                        inv.save()
-                    except Inventory.DoesNotExist:
-                        print(f"Inventory not found for product {item.product}")
+                    inv = item.inventory
+                    inv.on_hand -= item.quantity
+                    inv.save()
 
                 # Send SMS
-                send_sms(instance.customer.phone, f"Your order {instance.id} has been fulfilled.")
+                send_sms(instance.customer.phone_number, f"Your order {instance.id} has been fulfilled.")
 
             elif instance.state == "CANCELLED":
-                send_sms(instance.customer.phone, f"Your order {instance.id} has been cancelled.")
+                send_sms(instance.customer.phone_number, f"Your order {instance.id} has been cancelled.")

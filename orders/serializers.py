@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.db import transaction
-from .models import Customer, Inventory, Order, OrderItem
+from .models import Customer, Inventory, Order, OrderItem, Transaction
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -93,3 +93,8 @@ class OrderSerializer(serializers.ModelSerializer):
                         price_at_order=inventory.price if hasattr(inventory, 'price') else 0
                     )
         return instance
+    
+class TransactionSerializer(serializers.ModelSerializer):   # <-- ADD THIS
+    class Meta:
+        model = Transaction
+        fields = '__all__'    
