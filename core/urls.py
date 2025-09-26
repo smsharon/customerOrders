@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('orders.urls')),  # all orders endpoints go under /api/
+    path('oidc/', include('mozilla_django_oidc.urls')),
 ]

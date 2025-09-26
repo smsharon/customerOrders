@@ -1,10 +1,28 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.conf import settings
-from .models import Order, OrderItem, Transaction, Inventory
+from .models import Order, OrderItem, Transaction, Inventory, Customer
 
 # --- Configure Africa's Talking (SMS only) ---
 from africastalking.SMS import SMSService
+
+import uuid
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+@receiver(post_save, sender=User)
+def create_customer_for_new_user(sender, instance, created, **kwargs):
+    if created:
+        # Generate a unique customer code
+        customer_code = str(uuid.uuid4())[:8].upper()
+        Customer.objects.create(
+            user=instance,
+            name=instance.username or "Unknown",
+            code=customer_code,
+            phone_number="0000000000"  # placeholder, update later
+        )
 
 AT_USERNAME = getattr(settings, "AFRICASTALKING_USERNAME", "sandbox")
 AT_API_KEY = getattr(settings, "AFRICASTALKING_API_KEY", "")

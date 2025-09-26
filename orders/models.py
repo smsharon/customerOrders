@@ -4,12 +4,19 @@ Defines the aqpplication models.
 from django.db import models
 from django.utils.timezone import now
 from . import constants
+from django.conf import settings
+
 
 
 """
 Customer model representing customers in the system.
 """
 class Customer(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="customer_profile"
+    )
     name = models.CharField(max_length=120)
     code = models.CharField(max_length=50, unique=True)
     phone_number = models.CharField(max_length=20, unique=True)

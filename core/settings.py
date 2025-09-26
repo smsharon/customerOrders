@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +28,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -53,8 +54,38 @@ INSTALLED_APPS = [
     'orders',
     'rest_framework',
     'corsheaders',
-    'mozilla_django_oidc'
+    #'mozilla_django_oidc'
 ]
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",  # keep Django’s default
+    #"mozilla_django_oidc.auth.OIDCAuthenticationBackend",  # add OIDC backend
+)
+
+LOGIN_URL = "/oidc/authenticate/"       # Redirect unauthenticated users here
+LOGIN_REDIRECT_URL = "/"                # Where to go after login
+LOGOUT_REDIRECT_URL = "/"               # Where to go after logout
+
+OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
+OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
+OIDC_OP_AUTHORIZATION_ENDPOINT = "https://dev-fmuhsslvgyx3qqml.us.auth0.com/authorize"
+OIDC_OP_TOKEN_ENDPOINT = "https://dev-fmuhsslvgyx3qqml.us.auth0.com/oauth/token"
+OIDC_OP_USER_ENDPOINT = "https://dev-fmuhsslvgyx3qqml.us.auth0.com/userinfo"
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_OP_JWKS_ENDPOINT = "https://dev-fmuhsslvgyx3qqml.us.auth0.com/.well-known/jwks.json"
+
+AUTH0_DOMAIN = config("AUTH0_DOMAIN")
+API_IDENTIFIER = config("AUTH0_AUDIENCE")  # same as Audience in Auth0 API settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'orders.auth0_backend.Auth0JSONWebTokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
