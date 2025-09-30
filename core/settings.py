@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'orders',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     #'mozilla_django_oidc'
 ]
@@ -78,12 +79,10 @@ AUTH0_DOMAIN = config("AUTH0_DOMAIN")
 API_IDENTIFIER = config("AUTH0_AUDIENCE")  # same as Audience in Auth0 API settings
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'orders.auth0_backend.Auth0JSONWebTokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
 

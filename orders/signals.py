@@ -12,23 +12,21 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-@receiver(post_save, sender=User)
-def create_customer_for_new_user(sender, instance, created, **kwargs):
-    if created:
-        # Generate a unique customer code
-        customer_code = str(uuid.uuid4())[:8].upper()
-        Customer.objects.create(
-            user=instance,
-            name=instance.username or "Unknown",
-            code=customer_code,
-            phone_number="0000000000"  # placeholder, update later
-        )
+#@receiver(post_save, sender=User)
+#def create_customer_for_new_user(sender, instance, created, **kwargs):
+    #if created:
+        #customer_code = str(uuid.uuid4())[:8].upper()
+        #Customer.objects.create(
+           # user=instance,  # <-- FIX: Link to user!
+            #name=instance.username or "Unknown",
+            #code=customer_code,
+            #phone_number="0000000000"  # placeholder, update later
+        #)
 
 AT_USERNAME = getattr(settings, "AFRICASTALKING_USERNAME", "sandbox")
 AT_API_KEY = getattr(settings, "AFRICASTALKING_API_KEY", "")
 
 sms = SMSService(AT_USERNAME, AT_API_KEY)
-
 
 def send_sms(phone_number, message):
     """Send SMS via Africa's Talking, wrapped in try/except."""
@@ -36,7 +34,6 @@ def send_sms(phone_number, message):
         sms.send(message, [phone_number])
     except Exception as e:
         print(f"SMS sending failed: {e}")
-
 
 # --- Track state before saving for comparison ---
 @receiver(pre_save, sender=Order)
@@ -50,7 +47,6 @@ def track_order_state(sender, instance, **kwargs):
             instance._old_state = None
     else:
         instance._old_state = None
-
 
 # --- Create transaction and SMS after save ---
 @receiver(post_save, sender=Order)
