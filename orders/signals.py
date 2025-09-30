@@ -2,9 +2,10 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.conf import settings
 from .models import Order, OrderItem, Transaction, Inventory, Customer
-
-# --- Configure Africa's Talking (SMS only) ---
+import africastalking
 from africastalking.SMS import SMSService
+
+
 
 import uuid
 
@@ -12,28 +13,24 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-#@receiver(post_save, sender=User)
-#def create_customer_for_new_user(sender, instance, created, **kwargs):
-    #if created:
-        #customer_code = str(uuid.uuid4())[:8].upper()
-        #Customer.objects.create(
-           # user=instance,  # <-- FIX: Link to user!
-            #name=instance.username or "Unknown",
-            #code=customer_code,
-            #phone_number="0000000000"  # placeholder, update later
-        #)
 
+
+
+# Initialize Africa's Talking SDK
 AT_USERNAME = getattr(settings, "AFRICASTALKING_USERNAME", "sandbox")
 AT_API_KEY = getattr(settings, "AFRICASTALKING_API_KEY", "")
 
 sms = SMSService(AT_USERNAME, AT_API_KEY)
 
 def send_sms(phone_number, message):
-    """Send SMS via Africa's Talking, wrapped in try/except."""
     try:
-        sms.send(message, [phone_number])
+        response = sms.send(message, [phone_number])
+        print("SMS Response:", response)  # <-- helps you debug
+        return response
     except Exception as e:
         print(f"SMS sending failed: {e}")
+        return None
+
 
 # --- Track state before saving for comparison ---
 @receiver(pre_save, sender=Order)

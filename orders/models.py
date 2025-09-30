@@ -20,6 +20,17 @@ class Customer(models.Model):
     name = models.CharField(max_length=120)
     code = models.CharField(max_length=50, unique=True)
     phone_number = models.CharField(max_length=20, unique=True)
+    
+    def save(self, *args, **kwargs):
+        # Normalize phone number before saving
+        if self.phone_number.startswith("0"):
+            # Kenya format: 07xx... → +2547xx...
+            self.phone_number = "+254" + self.phone_number[1:]
+        elif not self.phone_number.startswith("+"):
+            # Fallback if user enters weird number (store as-is with +)
+            self.phone_number = "+" + self.phone_number
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.code})"

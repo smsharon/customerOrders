@@ -78,6 +78,11 @@ OIDC_OP_JWKS_ENDPOINT = "https://dev-fmuhsslvgyx3qqml.us.auth0.com/.well-known/j
 AUTH0_DOMAIN = config("AUTH0_DOMAIN")
 API_IDENTIFIER = config("AUTH0_AUDIENCE")  # same as Audience in Auth0 API settings
 
+AFRICASTALKING_USERNAME = os.getenv("AT_USERNAME", "sandbox")
+AFRICASTALKING_API_KEY = os.getenv("AT_API_KEY", "")
+
+
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
