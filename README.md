@@ -54,9 +54,9 @@ The database schema consists of `Customer`, `Order`, `Inventory`, and `Transacti
     python manage.py runserver
 
 ## Running Tests
-**Run all tests with coverage:**
+ - Run all tests with coverage:
     pytest --cov=orders
-**Coverage report in terminal:**
+ - Coverage report in terminal:
     pytest --cov=orders --cov-report=term-missing
 
 
