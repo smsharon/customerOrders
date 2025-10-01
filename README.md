@@ -38,7 +38,7 @@ The database schema consists of `Customer`, `Order`, `Inventory`, and `Transacti
 ## Setup Instructions
 
 1. **Clone the repository**
-   - git clone [git@github.com:smsharon/customerOrders.git]- -(https://github.com/smsharon/customerOrders.git)
+   - git clone (https://github.com/smsharon/customerOrders.git)
    - cd customerOrders
 2. **Create & activate a virtual environment:**
     - python -m venv .venv
