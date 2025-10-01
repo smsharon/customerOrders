@@ -13,26 +13,41 @@ from .serializers import (
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing Customer records.
+    Provides CRUD operations and a custom registration endpoint.
+    """
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = [permissions.AllowAny]
 
     @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
     def register(self, request):
+        """
+        Custom action to register a new customer.
+        Creates a Django auth User and links it with a Customer profile.
+
+        Request body should include:
+        - code (used as username)
+        - password
+        - name
+        - phone_number
+        - email (optional)
+
+        Returns:
+            Response: Serialized Customer data or error message.
+        """
         data = request.data
 
-        # check duplicate username
         if User.objects.filter(username=data['code']).exists():
             return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # create auth user
         user = User.objects.create_user(
             username=data['code'],
             password=data['password'],
             email=data.get('email', '')
         )
 
-        # create customer profile linked to user
         customer = Customer.objects.create(
             user=user,
             name=data['name'],
@@ -42,20 +57,31 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
         return Response(CustomerSerializer(customer).data, status=status.HTTP_201_CREATED)
 
+
 class InventoryViewSet(viewsets.ModelViewSet):
-    """CRUD for Inventory"""
+    """
+    ViewSet for managing Inventory items.
+    Provides CRUD operations.
+    """
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing Orders.
+    Ensures that only the authenticated customer's orders are visible.
+    Links new orders to the logged-in customer and triggers SMS notifications.
+    """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Only return orders for the authenticated customer
+        """
+        Restrict the queryset to orders belonging to the authenticated customer.
+        """
         try:
             customer = Customer.objects.get(user=self.request.user)
             return Order.objects.filter(customer=customer)
@@ -63,17 +89,23 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Order.objects.none()
 
     def perform_create(self, serializer):
-        # Link order to authenticated customer
+        """
+        Create a new order linked to the authenticated customer.
+        Also triggers an SMS notification via the `send_sms` signal.
+        """
         customer = Customer.objects.get(user=self.request.user)
         order = serializer.save(customer=customer)
-        # Send SMS
+
         from .signals import send_sms
         message = f"Dear {customer.name}, your order #{order.id} has been placed."
         send_sms(customer.phone_number, message)
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
-    """CRUD for Transactions"""
+    """
+    ViewSet for managing Transactions.
+    Provides CRUD operations for order-related transactions.
+    """
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = [permissions.IsAuthenticated]

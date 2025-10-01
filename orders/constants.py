@@ -1,6 +1,8 @@
 """
 Constants used throughout the application.
+These define standardized states, actions, and statuses for Orders, Transactions, and Inventory.
 """
+
 # Order states
 ORDER_STATES = {
     "DRAFT": "Draft",
@@ -21,7 +23,7 @@ TRANSACTION_ACTIONS = {
 
 # Inventory statuses
 INVENTORY_STATUS = {
-    "AVAILABLE": "AVAILABLE",
-    "FEW_REMAINING": "FEW REMAINING",
-    "OUT_OF_STOCK": "OUT OF STOCK",
+    "AVAILABLE": "Available",
+    "FEW_REMAINING": "Few remaining",
+    "OUT_OF_STOCK": "Out of stock",
 }
