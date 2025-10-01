@@ -24,7 +24,7 @@ The database schema consists of `Customer`, `Order`, `Inventory`, and `Transacti
 
 ![ER Diagram](docs/ER-DIAGRAM.png)
 
----
+
 
 ## Requirements
 - Python **3.10+**  
@@ -34,17 +34,16 @@ The database schema consists of `Customer`, `Order`, `Inventory`, and `Transacti
 - Africa’s Talking API credentials  
 - OpenID Connect credentials  
 
----
 
 ## Setup Instructions
 
 1. **Clone the repository**
-   git clone [git@github.com:smsharon/customerOrders.git](https://github.com/smsharon/customerOrders.git)
-   cd customerOrders
+   - git clone [git@github.com:smsharon/customerOrders.git]- -(https://github.com/smsharon/customerOrders.git)
+   - cd customerOrders
 2. **Create & activate a virtual environment:**
-    python -m venv .venv
-    source .venv/bin/activate   # On Linux/Mac
-    .venv\Scripts\activate      # On Windows
+    - python -m venv .venv
+    - source .venv/bin/activate   # On Linux/Mac
+    - .venv\Scripts\activate      # On Windows
 
 3. **Install dependencies:**
    pip install -r requirements.txt
@@ -62,18 +61,18 @@ The database schema consists of `Customer`, `Order`, `Inventory`, and `Transacti
 
 
 ## API Endpoints
-**Authentication**
-  POST /api/login/ → Logs in a user with OpenID and returns JWT
-**Customers**
-  POST /api/customers/ → Add a new customer (protected)
-  GET /api/customers/ → List all customers (protected)  
-**Inventory**
-  POST /api/inventory/ → Add new inventory item (protected)
-  GET /api/inventory/ → List all items   
-**Orders**
-  POST /api/orders/ → Create an order & send SMS (protected)
-  PUT /api/orders/{id}/approve/ → Approve an order (protected)
-  GET /api/orders/ → Retrieve all orders for authenticated user
+- Authentication
+    POST /api/login/: Logs in a user with OpenID and returns JWT
+- Customers
+    - POST /api/customers/: Add a new customer (protected)
+    - GET /api/customers/: List all customers (protected)  
+- Inventory
+    - POST /api/inventory/: Add new inventory item (protected)
+    - GET /api/inventory/: List all items   
+- Orders
+    - POST /api/orders/: Create an order & send SMS (protected)
+    - PUT /api/orders/{id}/approve/: Approve an order (protected)
+    - GET /api/orders/: Retrieve all orders for authenticated user
 
 ## License
 This project is licensed under the MIT License.
